@@ -1,6 +1,7 @@
 import WebGL from 'three/addons/capabilities/WebGL.js';
 import * as THREE from 'three';
 import {Snake, SnakeHead} from './src/components/SnakeSegment.js'
+import { Frame } from './src/components/Frame.js';
 
 // Basic instances
 const scene = new THREE.Scene();
@@ -16,16 +17,19 @@ document.body.appendChild( renderer.domElement );
 scene.background = new THREE.Color( 0x16172e );
 
 // Camera settings
-camera.position.set(0, 0, 100);
+camera.position.set(0, 0, 200);
 camera.lookAt(0, 0, 0);
 
 //Lighting settigns
-light.position.set( 1, 1, 1 ).normalize();
+light.position.set( 10, 15, 15 ).normalize();
 scene.add( light );
 
 //Snake
-let snake = new Snake(5, 0x8fa852, 1, 10, scene)
-document.addEventListener('keypress', snake.head.changeDirection.bind(snake.head))
+let snake = new Snake(5, 0x8fa852, 1, 5, scene);
+document.addEventListener('keypress', snake.head.changeDirection.bind(snake.head));
+
+//Frame
+const frame = new Frame(200, 2, 20, 0xa8327b, scene);
 
 function animate() {
 	requestAnimationFrame( animate );
