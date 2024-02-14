@@ -10,11 +10,16 @@ class GenericComponent {
 }
 
 class SnakeSegment extends GenericComponent{
-    constructor(size, color, speed) {
+    constructor(size, color, speed, previousSegment) {
         super(size, color, speed);
-        this.geometry = new THREE.CapsuleGeometry( this.size/2, this.size/4, this.size, this.size );
-        this.material = new THREE.MeshStandardMaterial( { color: this.color, defines: { 'STANDARD': ''}, metalness:0.2, roughness:0.7 } );
+        this.geometry = new THREE.SphereGeometry( this.size, 3*this.size, 2*this.size );
+        this.material = new THREE.MeshStandardMaterial( { color: this.color, metalness:0.2, roughness:0.7 } );
         this.body = new THREE.Mesh( this.geometry, this.material );
+        this.previousSegment = previousSegment;
+    }
+
+    alignToPrevious() {
+        this.direction = this.previousSegment.body.position.clone().sub(this.body.position).multiplyScalar(this.size/(this.size*10));
     }
 
     updateDirection(newDirection) {
@@ -29,7 +34,7 @@ class SnakeSegment extends GenericComponent{
 
 class SnakeHead extends SnakeSegment {
     constructor(size, color, speed) {
-        super(size, color, speed);
+        super(size, color, speed, null);
         this.lastPositionToChangeDirection = new THREE.Vector3(0,0,0);
         this.vectorLookup = {
             KeyW: [0, 1, 0],
@@ -53,7 +58,7 @@ class Snake extends GenericComponent{
         this.numberOfSegments = numberOfSegments;
         this.scene = scene;
         this.head = new SnakeHead(this.size, this.color, this.speed);
-        this.gap = this.size/5
+        this.gap = this.size
         this.segments = [this.head];
         this.spawnSegments(this.numberOfSegments);
     }
@@ -61,7 +66,7 @@ class Snake extends GenericComponent{
     spawnSegments(n) {
         this.scene.add(this.head.body)
         for (let i = 1; i<n; i++) {
-            const segment = new SnakeSegment(this.size, this.color, this.speed);
+            const segment = new SnakeSegment(this.size, this.color, this.speed, this.segments[i-1]);
             segment.body.translateOnAxis(this.direction.clone().negate(), (this.size+this.gap)*i)
             this.segments.push(segment);
             this.scene.add(segment.body)
@@ -71,9 +76,8 @@ class Snake extends GenericComponent{
     moveAll() {
         for (let i in this.segments) {
             this.segments[i].move();
-            let substrat = this.head.lastPositionToChangeDirection.clone().sub(this.segments[i].body.position).length()
-            if (i>=1 && substrat < 0.01){
-                this.segments[i].direction = this.segments[i-1].direction;
+            if (i>=1){
+                this.segments[i].alignToPrevious()
             }
         }
     }
