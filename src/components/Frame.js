@@ -16,9 +16,9 @@ class Wall extends GenericBlock {
         this.geometry = new THREE.BoxGeometry( this.size, this.wallThickness, this.wallHeight ); 
         this.material = new THREE.MeshStandardMaterial( { color: this.color, metalness:0.2, roughness:0.7 } );
         this.body = new THREE.Mesh( this.geometry, this.material );
+        this.body.geometry.computeBoundingBox();
         this.updateWallPosition();
         this.alignToNormal();
-        this.recalculateCollisonBox();
     }
 
     updateWallPosition() {
@@ -28,10 +28,8 @@ class Wall extends GenericBlock {
     alignToNormal() {
         const rotationAxis = new THREE.Vector3(0,1,0).cross(this.normalVector);
         this.body.rotateOnAxis(rotationAxis, Math.PI/2);
-    }
-
-    recalculateCollisonBox() {
-        this.geometry.computeBoundingBox();
+        this.body.updateMatrix();
+        this.body.geometry.boundingBox.applyMatrix4(this.body.matrix);
     }
 
 }
@@ -56,6 +54,7 @@ class Frame extends GenericBlock {
             const wall = new Wall(this.size, this.wallThickness, this.wallHeight, this.color, new THREE.Vector3(...this.wallNormals[i]));
             this.walls.push(wall);
             this.scene.add(wall.body);
+            this.scene.add( new THREE.Box3Helper(wall.body.geometry.boundingBox, 0xff00ff));
         }
     }
 }

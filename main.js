@@ -2,6 +2,7 @@ import WebGL from 'three/addons/capabilities/WebGL.js';
 import * as THREE from 'three';
 import {Snake, SnakeHead} from './src/components/SnakeSegment.js'
 import { Frame } from './src/components/Frame.js';
+import { Gameplay } from './src/Logic/Logic.js';
 
 // Basic instances
 const scene = new THREE.Scene();
@@ -31,10 +32,14 @@ document.addEventListener('keypress', snake.head.changeDirection.bind(snake.head
 //Frame
 const frame = new Frame(200, 2, 20, 0xa8327b, scene);
 
+//Gameplay
+const gameplay = new Gameplay(snake, frame, renderer);
+
 function animate() {
 	requestAnimationFrame( animate );
 
 	snake.moveAll();
+	gameplay.updateGameStatus();
 
 	renderer.render( scene, camera );
 }

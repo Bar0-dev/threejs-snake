@@ -17,8 +17,6 @@ class SnakeSegment extends GenericComponent{
         this.body = new THREE.Mesh( this.geometry, this.material );
         this.previousSegment = previousSegment;
         this.body.geometry.computeBoundingBox();
-
-        this.dc = 0;
     }
 
     alignToPrevious() {
@@ -30,16 +28,20 @@ class SnakeSegment extends GenericComponent{
         this.body.geometry.boundingBox.translate(this.direction.clone().multiplyScalar(this.speed))
     }
 
-    checkCollision() {
-
+    checkCollisions(objects){
+        for (let i in objects) {
+            if(this.body.geometry.boundingBox.intersectsBox(objects[i].body.geometry.boundingBox)) {
+                console.log(true);
+                return true;
+            }
+        }
+        return false;
     }
-
 }
 
 class SnakeHead extends SnakeSegment {
     constructor(size, color, speed) {
         super(size, color, speed, null);
-        this.lastPositionToChangeDirection = new THREE.Vector3(0,0,0);
         this.vectorLookup = {
             KeyW: [0, 1, 0],
             KeyS: [0, -1, 0],
@@ -53,9 +55,13 @@ class SnakeHead extends SnakeSegment {
             const newDirection = new THREE.Vector3(...this.vectorLookup[e.code]);
             if (!newDirection.equals(this.direction.clone().negate())) {
                 this.direction = newDirection;
-                this.lastPositionToChangeDirection = this.body.position.clone();
             }
         }
+    }
+
+    setStationary() {
+        const newDirection = new THREE.Vector3(0,0,0);
+        this.direction = newDirection;
     }
 }
 
@@ -64,11 +70,11 @@ class Snake extends GenericComponent{
         super(size, color, speed);
         this.numberOfSegments = numberOfSegments;
         this.scene = scene;
-        this.head = new SnakeHead(this.size, this.color, this.speed);
+        this.head = new SnakeHead(this.size, 0x0a0b10, this.speed);
         this.gap = this.size/2;
         this.segments = [this.head];
         this.spawnSegments(this.numberOfSegments);
-
+        this.initialMatrix = this.head.body.matrixWorld;
     }
 
     spawnSegments(n) {
@@ -76,7 +82,6 @@ class Snake extends GenericComponent{
         this.scene.add( new THREE.Box3Helper(this.head.body.geometry.boundingBox, 0xff00ff));
         for (let i = 1; i<n; i++) {
             const segment = new SnakeSegment(this.size, this.color, this.speed, this.segments[i-1]);
-            segment.body.translateOnAxis(this.direction.clone().negate(), (this.size+this.gap)*i)
             this.segments.push(segment);
             this.scene.add(segment.body);
             this.scene.add( new THREE.Box3Helper(this.segments[i].body.geometry.boundingBox, 0xff00ff));
@@ -90,6 +95,12 @@ class Snake extends GenericComponent{
                 this.segments[i].alignToPrevious()
             }
         }
+    }
+
+    restartSnake() {
+        this.head.setStationary();
+        this.head.body.applyMatrix4(this.initialMatrix.clone().invert());
+        this.head.body.geometry.boundingBox.applyMatrix4(this.initialMatrix.clone().invert())
     }
 }
 
