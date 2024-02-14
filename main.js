@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import {Snake, SnakeHead} from './src/components/SnakeSegment.js'
 import { Frame } from './src/components/Frame.js';
 import { Gameplay } from './src/Logic/Logic.js';
+import FoodSpawner from './src/components/Food.js';
 
 // Basic instances
 const scene = new THREE.Scene();
@@ -26,14 +27,18 @@ light.position.set( 10, 15, 15 ).normalize();
 scene.add( light );
 
 //Snake
-let snake = new Snake(5, 0x8fa852, 1, 5, scene);
+let snake = new Snake(10, 0x8fa852, 1, 5, scene);
 document.addEventListener('keypress', snake.head.changeDirection.bind(snake.head));
 
 //Frame
 const frame = new Frame(200, 2, 20, 0xa8327b, scene);
 
+//Food
+const foodSpawner = new FoodSpawner(3, 1, frame, scene);
+foodSpawner.spawnFood();
+
 //Gameplay
-const gameplay = new Gameplay(snake, frame, renderer);
+const gameplay = new Gameplay(snake, frame, foodSpawner, renderer);
 
 function animate() {
 	requestAnimationFrame( animate );

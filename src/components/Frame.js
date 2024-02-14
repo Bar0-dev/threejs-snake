@@ -46,7 +46,6 @@ class Frame extends GenericBlock {
             3: [0,-1,0],
         }
         this.generateWalls();
-        // this.scene.add( new THREE.BoxHelper(this.walls[3].body, 0xff00ff))
     }
 
     generateWalls() {
@@ -54,7 +53,8 @@ class Frame extends GenericBlock {
             const wall = new Wall(this.size, this.wallThickness, this.wallHeight, this.color, new THREE.Vector3(...this.wallNormals[i]));
             this.walls.push(wall);
             this.scene.add(wall.body);
-            this.scene.add( new THREE.Box3Helper(wall.body.geometry.boundingBox, 0xff00ff));
+            //DEBUG
+            // this.scene.add( new THREE.Box3Helper(wall.body.geometry.boundingBox, 0xff00ff));
         }
     }
 }

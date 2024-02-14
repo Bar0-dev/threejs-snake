@@ -12,7 +12,8 @@ class GenericComponent {
 class SnakeSegment extends GenericComponent{
     constructor(size, color, speed, previousSegment) {
         super(size, color, speed);
-        this.geometry = new THREE.SphereGeometry( this.size, 3*this.size, 2*this.size );
+        // this.geometry = new THREE.SphereGeometry( this.size, 3*this.size, 2*this.size );
+        this.geometry = new THREE.BoxGeometry( this.size, this.size, this.size );
         this.material = new THREE.MeshStandardMaterial( { color: this.color, metalness:0.2, roughness:0.7 } );
         this.body = new THREE.Mesh( this.geometry, this.material );
         this.previousSegment = previousSegment;
@@ -79,12 +80,14 @@ class Snake extends GenericComponent{
 
     spawnSegments(n) {
         this.scene.add(this.head.body)
-        this.scene.add( new THREE.Box3Helper(this.head.body.geometry.boundingBox, 0xff00ff));
+        //DEBUG
+        // this.scene.add( new THREE.Box3Helper(this.head.body.geometry.boundingBox, 0xff00ff));
         for (let i = 1; i<n; i++) {
             const segment = new SnakeSegment(this.size, this.color, this.speed, this.segments[i-1]);
             this.segments.push(segment);
             this.scene.add(segment.body);
-            this.scene.add( new THREE.Box3Helper(this.segments[i].body.geometry.boundingBox, 0xff00ff));
+            //DEBUG
+            // this.scene.add( new THREE.Box3Helper(this.segments[i].body.geometry.boundingBox, 0xff00ff));
         }
     }
 
