@@ -19,7 +19,7 @@ document.body.appendChild(renderer.domElement)
 scene.background = new THREE.Color(0x16172e)
 
 // Camera settings
-camera.position.set(0, 0, 200)
+camera.position.set(10, 10, 300)
 camera.lookAt(0, 0, 0)
 
 // Lighting settigns
@@ -28,17 +28,19 @@ scene.add(light)
 
 // Snake
 const snake = new Snake(10, 0x8fa852, 1, 5, scene)
+snake.spawnSnake()
 document.addEventListener('keypress', snake.head.changeDirection.bind(snake.head))
 
 // Frame
-const frame = new Frame(200, 2, 20, 0xa8327b, scene)
+const frame = new Frame(400, 2, 20, 0xa8327b, scene)
+frame.spawnFrame()
 
 // Food
 const foodSpawner = new FoodSpawner(3, 1, frame, scene)
 foodSpawner.spawnFood()
 
 // Gameplay
-const gameplay = new Gameplay(snake, frame, foodSpawner, renderer)
+const gameplay = new Gameplay(snake, frame, foodSpawner, scene)
 
 function animate () {
   requestAnimationFrame(animate)

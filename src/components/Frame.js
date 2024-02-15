@@ -44,10 +44,9 @@ class Frame extends GenericBlock {
       2: [0, 1, 0],
       3: [0, -1, 0]
     }
-    this.generateWalls()
   }
 
-  generateWalls () {
+  spawnFrame () {
     for (const i in this.wallNormals) {
       const wall = new Wall(this.size, this.wallThickness, this.wallHeight, this.color, new THREE.Vector3(...this.wallNormals[i]))
       this.walls.push(wall)

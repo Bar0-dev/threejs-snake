@@ -62,11 +62,10 @@ class Snake extends GenericComponent {
     super(size, color, speed)
     this.numberOfSegments = numberOfSegments
     this.scene = scene
-    this.head = new SnakeHead(this.size, 0x0a0b10, this.speed)
+    this.head = new SnakeHead(this.size, this.color, this.speed)
     this.gap = this.size / 2
     this.segments = []
     this.initialMatrix = this.head.body.matrixWorld
-    this.spawnSegments()
   }
 
   addSegment (previousSegment) {
@@ -77,7 +76,7 @@ class Snake extends GenericComponent {
     // this.scene.add( new THREE.Box3Helper(segment.body.geometry.boundingBox, 0xff00ff));
   }
 
-  spawnSegments () {
+  spawnSnake () {
     this.segments.push(this.head)
     this.scene.add(this.head.body)
     // DEBUG
