@@ -19,8 +19,8 @@ class CollisionChecker {
     }
 
     checkForFoodCollisions() {
-        for (let i in this.foodSpawner.allFood) {
-            const food = this.foodSpawner.allFood[i];
+        for (const [key, value] of this.foodSpawner.allFood) {
+            const food = value;
             if(this.checkCollision(food.body.geometry.boundingBox))
                 return food.uuid;
         }
@@ -32,6 +32,7 @@ class Gameplay extends CollisionChecker {
     constructor(snake, frame, foodSpawner, renderer) {
         super(snake, frame, foodSpawner);
         this.renderer = renderer;
+        this.score = 0;
     }
 
     updateGameStatus() {
@@ -39,10 +40,13 @@ class Gameplay extends CollisionChecker {
         const collidedFoodUuid = this.checkForFoodCollisions();
         if (hasCollidedWithWall) {
             this.snake.restartSnake();
+            this.foodSpawner.resetEatenFood();
+            this.score = 0;
         }
         if (collidedFoodUuid) {
-            console.log(collidedFoodUuid);
             this.foodSpawner.removeFood(collidedFoodUuid);
+            this.foodSpawner.spawnFood();
+            this.score = this.foodSpawner.eatenFood
         }
     }
 }

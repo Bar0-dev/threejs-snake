@@ -31,8 +31,11 @@ export default class FoodSpawner {
         this.interval = interval;
         this.frame = frame;
         this.scene = scene;
-        this.allFood = {};
-        this.baseColor = 0xd4968c
+        this.allFood = new Map();
+        this.eatenFood = 0;
+        this.baseColor = 0xd4968c;
+        this.timer = new THREE.Clock(true);
+        this.foodSpawnDelay = 1; //s
         
     }
 
@@ -41,17 +44,27 @@ export default class FoodSpawner {
     }
 
     spawnFood() {
-        const food = new Food(this.size, this.colorGenerator());
-        food.spawn(this.frame.size);
-        this.scene.add(food.body);
-        this.allFood[food.uuid]=food;
-        //DEBUG
-        // this.scene.add( new THREE.Box3Helper(food.body.geometry.boundingBox, 0xff00ff));
+        if (true) {
+            const food = new Food(this.size, this.colorGenerator());
+            food.spawn(this.frame.size);
+            this.scene.add(food.body);
+            this.allFood.set(food.uuid, food);
+            this.timer.getDelta()
+            //DEBUG
+            // this.scene.add( new THREE.Box3Helper(food.body.geometry.boundingBox, 0xff00ff));
+        }
     }
 
     removeFood(foodUuid) {
-        const food = this.allFood[foodUuid];
-        food.body.removeFromParent();
-        this.spawnFood();
+        const food = this.allFood.get(foodUuid);
+        this.scene.remove(food.body);
+        this.allFood.delete(foodUuid);
+        food.geometry.dispose();
+        food.body = null;
+        this.eatenFood++;
+    }
+
+    resetEatenFood() {
+        this.eatenFood = 0;
     }
 }

@@ -18,10 +18,11 @@ class SnakeSegment extends GenericComponent{
         this.body = new THREE.Mesh( this.geometry, this.material );
         this.previousSegment = previousSegment;
         this.body.geometry.computeBoundingBox();
+        this.tailSegmentDispersionFactor = 7;
     }
 
     alignToPrevious() {
-        this.direction = this.previousSegment.body.position.clone().sub(this.body.position).multiplyScalar(this.size/(this.size*10));
+        this.direction = this.previousSegment.body.position.clone().sub(this.body.position).multiplyScalar(1/this.tailSegmentDispersionFactor);
     }
 
     move() {
@@ -32,7 +33,6 @@ class SnakeSegment extends GenericComponent{
     checkCollisions(objects){
         for (let i in objects) {
             if(this.body.geometry.boundingBox.intersectsBox(objects[i].body.geometry.boundingBox)) {
-                console.log(true);
                 return true;
             }
         }
