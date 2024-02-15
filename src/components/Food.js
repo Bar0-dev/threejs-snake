@@ -39,7 +39,7 @@ export default class FoodSpawner {
   }
 
   colorGenerator () {
-    return this.baseColor * Math.random() * 0x0F0000
+    return this.baseColor * Math.random() * 0x0000F0
   }
 
   spawnFood () {

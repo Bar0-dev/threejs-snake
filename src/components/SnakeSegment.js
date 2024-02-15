@@ -90,7 +90,6 @@ class Snake extends GenericComponent {
 
   appendSegment () {
     const [previousSegment] = this.segments.slice(-1)
-    console.log(previousSegment)
     this.addSegment(previousSegment)
   }
 
@@ -103,10 +102,20 @@ class Snake extends GenericComponent {
     }
   }
 
+  removeGainedSegments () {
+    for (let i = this.segments.length; i > this.numberOfSegments; i--) {
+      const segment = this.segments.pop()
+      this.scene.remove(segment.body)
+      segment.geometry.dispose()
+      segment.body = null
+    }
+  }
+
   resetSnake () {
     this.head.setStationary()
     this.head.body.applyMatrix4(this.initialMatrix.clone().invert())
     this.head.body.geometry.boundingBox.applyMatrix4(this.initialMatrix.clone().invert())
+    this.removeGainedSegments()
   }
 }
 
