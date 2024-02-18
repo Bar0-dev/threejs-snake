@@ -117,6 +117,7 @@ class Gameplay extends CollisionChecker {
 
       case 'PLAYING':
         this.snake.moveAll()
+        this.foodSpawner.spinAllFood()
         hasCollidedWithWall = this.checkForWallCollisions()
         collidedFoodUuid = this.checkForFoodCollisions()
         if (hasCollidedWithWall) { this.state = 'LOST' }
