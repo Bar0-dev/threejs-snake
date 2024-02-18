@@ -41,45 +41,42 @@ class Text3DGenerator {
     this.scene = scene
     this.height = this.size / 20
     this.loader = new FontLoader()
-    this.font = null
-    this.loadFont()
-    this.geometry = null
-    this.material = new THREE.MeshPhongMaterial({ color: this.color })
     this.body = null
-  }
-
-  loadFont () {
-    this.loader.load('fonts/helvetiker_regular.typeface.json', (font) => { this.font = font })
   }
 
   generateNew3Dtext (text) {
-    this.remove3Dtext()
-    this.geometry = new TextGeometry(text, {
-      font: this.font,
-      size: this.size,
-      height: this.height,
-      curveSegments: 30,
-      bevelEnabled: true,
-      bevelThickness: 10,
-      bevelSize: 5,
-      bevelOffset: 0,
-      bevelSegments: 20
+    if (this.body != null) {
+      this.remove3Dtext()
+    }
+    this.loader.load('fonts/helvetiker_regular.typeface.json', (font) => {
+      const material = new THREE.MeshPhongMaterial({ color: this.color })
+      const geometry = new TextGeometry(text, {
+        font,
+        size: this.size,
+        height: this.height,
+        curveSegments: 30,
+        bevelEnabled: true,
+        bevelThickness: 10,
+        bevelSize: 5,
+        bevelOffset: 0,
+        bevelSegments: 20
+      })
+      this.body = new THREE.Mesh(geometry, material)
+      this.body.geometry.computeBoundingBox()
+      this.body.position.z = this.zOffset
+      const centerVector = new THREE.Vector3()
+      this.body.geometry.boundingBox.getCenter(centerVector)
+      this.body.translateOnAxis(centerVector.negate(), 1)
+      this.scene.add(this.body)
     })
-    this.body = new THREE.Mesh(this.geometry, this.material)
-    this.body.geometry.computeBoundingBox()
-    this.body.position.z = this.zOffset
-    const centerVector = new THREE.Vector3()
-    this.body.geometry.boundingBox.getCenter(centerVector)
-    this.body.translateOnAxis(centerVector.negate(), 1)
-    this.scene.add(this.body)
   }
 
   remove3Dtext () {
-    if(this.geometry) {
-      this.geometry.dispose()
+    if (this.body) {
+      this.body.geometry.dispose()
+      this.scene.remove(this.body)
+      this.body = null
     }
-    this.scene.remove(this.body)
-    this.body = null
   }
 }
 
@@ -88,12 +85,12 @@ class Gameplay extends CollisionChecker {
     super(snake, frame, foodSpawner)
     this.scene = scene
     this.score = -1
-    this.text3DGenerator = new Text3DGenerator(50, 0x985adb, -40, this.scene)
+    this.text3DGenerator = new Text3DGenerator(30, 0x985adb, -40, this.scene)
   }
 
   newGame () {
     if (this.score === -1) {
-      this.text3DGenerator.generateNew3Dtext("press WSAD\n    to play")
+      this.text3DGenerator.generateNew3Dtext('press WSAD\n    to play')
       this.score = 0
     }
   }
@@ -106,7 +103,7 @@ class Gameplay extends CollisionChecker {
       this.snake.resetSnake()
       this.foodSpawner.resetEatenFood()
       this.score = 0
-      this.text3DGenerator.generateNew3Dtext("You lost\npress WSAD to\n play again")
+      this.text3DGenerator.generateNew3Dtext('You lost\npress WSAD to\n play again')
     }
     if (collidedFoodUuid) {
       this.foodSpawner.removeFood(collidedFoodUuid)
