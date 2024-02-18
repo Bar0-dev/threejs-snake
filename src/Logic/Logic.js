@@ -44,10 +44,7 @@ class Text3DGenerator {
     this.body = null
   }
 
-  generateNew3Dtext (text) {
-    if (this.body != null) {
-      this.remove3Dtext()
-    }
+  generate3Dtext (text) {
     this.loader.load('fonts/helvetiker_regular.typeface.json', (font) => {
       const material = new THREE.MeshPhongMaterial({ color: this.color })
       const geometry = new TextGeometry(text, {
@@ -56,10 +53,10 @@ class Text3DGenerator {
         height: this.height,
         curveSegments: 30,
         bevelEnabled: true,
-        bevelThickness: 10,
-        bevelSize: 5,
+        bevelThickness: 8,
+        bevelSize: 4,
         bevelOffset: 0,
-        bevelSegments: 20
+        bevelSegments: 15
       })
       this.body = new THREE.Mesh(geometry, material)
       this.body.geometry.computeBoundingBox()
@@ -84,33 +81,64 @@ class Gameplay extends CollisionChecker {
   constructor (snake, frame, foodSpawner, scene) {
     super(snake, frame, foodSpawner)
     this.scene = scene
-    this.score = -1
+    this.score = 0
     this.text3DGenerator = new Text3DGenerator(30, 0x985adb, -40, this.scene)
+    this.states = ['INIT', 'IDLE', 'NEWGAME', 'PLAYING', 'LOST', 'RESTART']
+    this.state = 'INIT'
   }
 
-  newGame () {
-    if (this.score === -1) {
-      this.text3DGenerator.generateNew3Dtext('press WSAD\n    to play')
-      this.score = 0
+  handleKeyPress (e) {
+    if (this.state === 'IDLE' || this.state === 'LOST') {
+      if (e.code === 'Enter') { this.state = 'NEWGAME' }
+    }
+    if (this.state === 'PLAYING') {
+      this.snake.head.changeDirection(e)
     }
   }
 
-  updateGameStatus () {
-    this.newGame()
-    const hasCollidedWithWall = this.checkForWallCollisions()
-    const collidedFoodUuid = this.checkForFoodCollisions()
-    if (hasCollidedWithWall) {
-      this.snake.resetSnake()
-      this.foodSpawner.resetEatenFood()
-      this.score = 0
-      this.text3DGenerator.generateNew3Dtext('You lost\npress WSAD to\n play again')
-    }
-    if (collidedFoodUuid) {
-      this.foodSpawner.removeFood(collidedFoodUuid)
-      this.foodSpawner.spawnFood()
-      this.score = this.foodSpawner.eatenFood
-      this.text3DGenerator.generateNew3Dtext(this.score.toString())
-      this.snake.appendSegment()
+  gameTick () {
+    let hasCollidedWithWall = null
+    let collidedFoodUuid = null
+    switch (this.state) {
+      case 'IDLE':
+        break
+
+      case 'INIT':
+        this.text3DGenerator.generate3Dtext('press Enter\nto play\nWSAD to move')
+        this.state = 'IDLE'
+        break
+
+      case 'NEWGAME':
+        this.snake.resetSnake()
+        this.text3DGenerator.remove3Dtext()
+        this.text3DGenerator.generate3Dtext(this.score.toString())
+        this.state = 'PLAYING'
+        break
+
+      case 'PLAYING':
+        this.snake.moveAll()
+        hasCollidedWithWall = this.checkForWallCollisions()
+        collidedFoodUuid = this.checkForFoodCollisions()
+        if (hasCollidedWithWall) { this.state = 'LOST' }
+        if (collidedFoodUuid) {
+          this.foodSpawner.removeFood(collidedFoodUuid)
+          this.foodSpawner.spawnFood()
+          this.text3DGenerator.remove3Dtext()
+          this.score++
+          this.text3DGenerator.generate3Dtext(this.score.toString())
+          this.snake.appendSegment()
+        }
+        break
+
+      case 'LOST':
+        this.text3DGenerator.remove3Dtext()
+        this.text3DGenerator.generate3Dtext(`Score: ${this.score}\npress Enter\nto play again`)
+        this.score = 0
+        this.state = 'IDLE'
+        break
+
+      default:
+        break
     }
   }
 }
