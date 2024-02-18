@@ -12,7 +12,7 @@ class CollisionChecker {
   }
 
   checkCollision (boundingBox) {
-    return this.snake.head.body.geometry.boundingBox.intersectsBox(boundingBox)
+    return this.snake.head.collisionBox.intersectsBox(boundingBox)
   }
 
   checkForWallCollisions () {

@@ -19,15 +19,20 @@ class SnakeSegment extends GenericComponent {
     this.previousSegment = previousSegment
     this.body.geometry.computeBoundingBox()
     this.tailSegmentDispersionFactor = 10
+    this.collisionBox = new THREE.Box3()
   }
 
   alignToPrevious () {
     this.direction = this.previousSegment.body.position.clone().sub(this.body.position).multiplyScalar(1 / this.tailSegmentDispersionFactor)
   }
 
+  updateCollisionBoxPosition () {
+    this.collisionBox.copy(this.body.geometry.boundingBox).applyMatrix4(this.body.matrixWorld)
+  }
+
   move () {
     this.body.translateOnAxis(this.direction, this.speed)
-    this.body.geometry.boundingBox.translate(this.direction.clone().multiplyScalar(this.speed))
+    this.updateCollisionBoxPosition()
   }
 }
 
@@ -71,11 +76,12 @@ class Snake extends GenericComponent {
   addSegment (previousSegment) {
     const segment = new SnakeSegment(this.size, this.color, this.speed, previousSegment)
     segment.body.translateOnAxis(previousSegment.body.position, 1)
-    segment.body.geometry.boundingBox.translate(previousSegment.body.position)
+    segment.updateCollisionBoxPosition()
     this.segments.push(segment)
     this.scene.add(segment.body)
     // DEBUG
-    this.scene.add(new THREE.Box3Helper(segment.body.geometry.boundingBox, 0xff00ff))
+    // this.scene.add(new THREE.Box3Helper(segment.body.geometry.boundingBox, 0xff00ff))
+    this.scene.add(new THREE.Box3Helper(segment.collisionBox, 0xff00ff))
   }
 
   spawnSnake () {
@@ -83,6 +89,8 @@ class Snake extends GenericComponent {
     this.scene.add(this.head.body)
     // DEBUG
     // this.scene.add( new THREE.Box3Helper(this.head.body.geometry.boundingBox, 0xff00ff));
+    this.scene.add(new THREE.Box3Helper(this.head.collisionBox, 0xff00ff))
+
     for (let i = 1; i < this.numberOfSegments; i++) {
       const previousSegment = this.segments[i - 1]
       this.addSegment(previousSegment)
@@ -115,7 +123,7 @@ class Snake extends GenericComponent {
   resetSnake () {
     this.head.setStationary()
     this.head.body.applyMatrix4(this.initialMatrix.clone().invert())
-    this.head.body.geometry.boundingBox.applyMatrix4(this.initialMatrix.clone().invert())
+    this.head.body.geometry.boundingBox.applyMatrix4(new THREE.Matrix4())
     this.removeGainedSegments()
   }
 }
