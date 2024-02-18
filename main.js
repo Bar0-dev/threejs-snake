@@ -29,7 +29,6 @@ scene.add(light)
 // Snake
 const snake = new Snake(10, 0x8fa852, 1, 5, scene)
 snake.spawnSnake()
-document.addEventListener('keypress', snake.head.changeDirection.bind(snake.head))
 
 // Frame
 const frame = new Frame(400, 2, 20, 0xa8327b, scene)
@@ -41,12 +40,12 @@ foodSpawner.spawnFood()
 
 // Gameplay
 const gameplay = new Gameplay(snake, frame, foodSpawner, scene)
+document.addEventListener('keypress', gameplay.handleKeyPress.bind(gameplay))
 
 function animate () {
   requestAnimationFrame(animate)
 
-  snake.moveAll()
-  gameplay.updateGameStatus()
+  gameplay.gameTick()
 
   renderer.render(scene, camera)
 }

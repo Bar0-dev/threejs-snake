@@ -18,7 +18,7 @@ class SnakeSegment extends GenericComponent {
     this.body = new THREE.Mesh(this.geometry, this.material)
     this.previousSegment = previousSegment
     this.body.geometry.computeBoundingBox()
-    this.tailSegmentDispersionFactor = 7
+    this.tailSegmentDispersionFactor = 10
   }
 
   alignToPrevious () {
@@ -70,6 +70,7 @@ class Snake extends GenericComponent {
 
   addSegment (previousSegment) {
     const segment = new SnakeSegment(this.size, this.color, this.speed, previousSegment)
+    segment.body.translateOnAxis(previousSegment.body.position,1)
     this.segments.push(segment)
     this.scene.add(segment.body)
     // DEBUG
