@@ -104,7 +104,7 @@ class Gameplay extends CollisionChecker {
         break
 
       case 'INIT':
-        this.text3DGenerator.generate3Dtext('press Enter\nto play\nWSAD to move')
+        this.text3DGenerator.generate3Dtext('press\nEnter to play\nWSAD to move')
         this.state = 'IDLE'
         break
 
@@ -132,7 +132,7 @@ class Gameplay extends CollisionChecker {
 
       case 'LOST':
         this.text3DGenerator.remove3Dtext()
-        this.text3DGenerator.generate3Dtext(`Score: ${this.score}\npress Enter\nto play again`)
+        this.text3DGenerator.generate3Dtext(`Score: ${this.score}\nEnter to restart`)
         this.score = 0
         this.state = 'IDLE'
         break
