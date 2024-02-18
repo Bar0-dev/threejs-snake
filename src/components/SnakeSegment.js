@@ -70,11 +70,12 @@ class Snake extends GenericComponent {
 
   addSegment (previousSegment) {
     const segment = new SnakeSegment(this.size, this.color, this.speed, previousSegment)
-    segment.body.translateOnAxis(previousSegment.body.position,1)
+    segment.body.translateOnAxis(previousSegment.body.position, 1)
+    segment.body.geometry.boundingBox.translate(previousSegment.body.position)
     this.segments.push(segment)
     this.scene.add(segment.body)
     // DEBUG
-    // this.scene.add( new THREE.Box3Helper(segment.body.geometry.boundingBox, 0xff00ff));
+    this.scene.add( new THREE.Box3Helper(segment.body.geometry.boundingBox, 0xff00ff))
   }
 
   spawnSnake () {

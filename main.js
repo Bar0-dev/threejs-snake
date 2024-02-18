@@ -10,6 +10,7 @@ const scene = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
 const renderer = new THREE.WebGLRenderer()
 const light = new THREE.DirectionalLight(0xffffff, 3)
+const ambientLight = new THREE.AmbientLight(0x404040) // soft white light
 
 // Renderer settings
 renderer.setSize(window.innerWidth, window.innerHeight)
@@ -25,6 +26,7 @@ camera.lookAt(0, 0, 0)
 // Lighting settigns
 light.position.set(10, 15, 15).normalize()
 scene.add(light)
+scene.add(ambientLight)
 
 // Snake
 const snake = new Snake(10, 0x8fa852, 1, 5, scene)
@@ -35,7 +37,7 @@ const frame = new Frame(400, 2, 20, 0xa8327b, scene)
 frame.spawnFrame()
 
 // Food
-const foodSpawner = new FoodSpawner(3, 1, frame, scene)
+const foodSpawner = new FoodSpawner(5, 1, frame, scene)
 foodSpawner.spawnFood()
 
 // Gameplay
