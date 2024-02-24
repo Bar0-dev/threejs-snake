@@ -65,7 +65,7 @@ class SnakeHead extends SnakeSegment {
 class Snake extends GenericComponent {
   constructor (size, color, speed, numberOfSegments, scene) {
     super(size, color, speed)
-    this.numberOfSegments = numberOfSegments
+    this.initialNumberOfSegments = numberOfSegments
     this.scene = scene
     this.head = new SnakeHead(this.size, this.color, this.speed)
     this.gap = this.size / 2
@@ -81,7 +81,7 @@ class Snake extends GenericComponent {
     this.scene.add(segment.body)
     // DEBUG
     // this.scene.add(new THREE.Box3Helper(segment.body.geometry.boundingBox, 0xff00ff))
-    this.scene.add(new THREE.Box3Helper(segment.collisionBox, 0xff00ff))
+    // this.scene.add(new THREE.Box3Helper(segment.collisionBox, 0xff00ff))
   }
 
   spawnSnake () {
@@ -89,9 +89,9 @@ class Snake extends GenericComponent {
     this.scene.add(this.head.body)
     // DEBUG
     // this.scene.add( new THREE.Box3Helper(this.head.body.geometry.boundingBox, 0xff00ff));
-    this.scene.add(new THREE.Box3Helper(this.head.collisionBox, 0xff00ff))
+    // this.scene.add(new THREE.Box3Helper(this.head.collisionBox, 0xff00ff))
 
-    for (let i = 1; i < this.numberOfSegments; i++) {
+    for (let i = 1; i < this.initialNumberOfSegments; i++) {
       const previousSegment = this.segments[i - 1]
       this.addSegment(previousSegment)
     }
@@ -112,7 +112,7 @@ class Snake extends GenericComponent {
   }
 
   removeGainedSegments () {
-    for (let i = this.segments.length; i > this.numberOfSegments; i--) {
+    for (let i = this.segments.length; i > this.initialNumberOfSegments; i--) {
       const segment = this.segments.pop()
       this.scene.remove(segment.body)
       segment.geometry.dispose()

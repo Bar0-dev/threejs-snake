@@ -31,6 +31,16 @@ class CollisionChecker {
     }
     return null
   }
+
+  checkForTailCollision () {
+    for (let i = this.snake.initialNumberOfSegments; i < this.snake.segments.length; i++) {
+      if (this.checkCollision(this.snake.segments[i].collisionBox)) {
+        console.log('tail')
+        return true
+      }
+    }
+    return false
+  }
 }
 
 class Text3DGenerator {
@@ -99,6 +109,7 @@ class Gameplay extends CollisionChecker {
   gameTick () {
     let hasCollidedWithWall = null
     let collidedFoodUuid = null
+    let hasCollidedWithTail = null
     switch (this.state) {
       case 'IDLE':
         break
@@ -120,7 +131,8 @@ class Gameplay extends CollisionChecker {
         this.foodSpawner.spinAllFood()
         hasCollidedWithWall = this.checkForWallCollisions()
         collidedFoodUuid = this.checkForFoodCollisions()
-        if (hasCollidedWithWall) { this.state = 'LOST' }
+        hasCollidedWithTail = this.checkForTailCollision()
+        if (hasCollidedWithWall || hasCollidedWithTail) { this.state = 'LOST' }
         if (collidedFoodUuid) {
           this.foodSpawner.removeFood(collidedFoodUuid)
           this.foodSpawner.spawnFood()
